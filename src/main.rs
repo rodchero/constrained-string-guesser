@@ -31,13 +31,13 @@ fn main() {
 
     let mut handles = Vec::new();
     let p1_space_permutations: Vec<Vec<usize>> = vec![
-        vec![], vec![3], vec![5], vec![12], vec![3, 5], vec![3, 12], vec![5, 12], vec![3, 5, 12] 
+        vec![3], vec![5], vec![12], vec![3, 5], vec![3, 12], vec![5, 12]
     ];
     let p2_space_permutations: Vec<Vec<usize>> = vec![
-        vec![3, 5, 12], vec![5, 12], vec![3, 12], vec![3, 5], vec![12], vec![5], vec![3], vec![]
+        vec![5, 12], vec![3, 12], vec![3, 5], vec![12], vec![5], vec![3]
     ];
 
-    for thread_id in 0..8 {
+    for thread_id in 0..6 {
         let output_file = Arc::clone(&output_file);
         let wordlist = wordlist.clone();
         let xor_constraint = xor_constraint.clone();
@@ -56,8 +56,7 @@ fn main() {
             );
         });
         handles.push(handle);
-        // temporary
-        break;
+        println!("Thread {thread_id} spawned.");
     }
 
     for handle in handles {
