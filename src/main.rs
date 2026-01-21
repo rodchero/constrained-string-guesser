@@ -25,18 +25,24 @@ fn main() {
     let file = OpenOptions::new()
         .create(true)
         .append(true)
-        .open("output.txt")
+        .open("./output.txt")
         .unwrap();
     let output_file = Arc::new(Mutex::new(file));
 
     let mut handles = Vec::new();
+    let p1_space_permutations: Vec<Vec<usize>> = vec![
+        vec![], vec![3], vec![5], vec![12], vec![3, 5], vec![3, 12], vec![5, 12], vec![3, 5, 12] 
+    ];
+    let p2_space_permutations: Vec<Vec<usize>> = vec![
+        vec![3, 5, 12], vec![5, 12], vec![3, 12], vec![3, 5], vec![12], vec![5], vec![3], vec![]
+    ];
 
     for thread_id in 0..8 {
         let output_file = Arc::clone(&output_file);
         let wordlist = wordlist.clone();
         let xor_constraint = xor_constraint.clone();
-        let p1_space_indices = vec![3, 12];
-        let p2_space_indices = vec![5];
+        let p1_space_indices = p1_space_permutations[thread_id].clone();
+        let p2_space_indices = p2_space_permutations[thread_id].clone();
         let space_alternate_letters = vec!['r', 'n', 's'];
         let handle = thread::spawn(move || {
             search_subtask(
