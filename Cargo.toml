@@ -5,3 +5,5 @@ edition = "2024"
 
 [dependencies]
 itertools = "0.14.0"
+wordfreq = "0.2"
+wordfreq-model = "0.2"

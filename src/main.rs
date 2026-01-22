@@ -4,6 +4,10 @@ use std::io::{self, BufRead, Write};
 use std::path::Path;
 use std::sync::{Arc, Mutex};
 use std::thread;
+use wordfreq::WordFreq;
+use wordfreq_model::{load_wordfreq, ModelKind};
+
+
 
 fn main() {
     // get wordlist
@@ -16,6 +20,17 @@ fn main() {
             }
         }
     }
+
+    let wf = load_wordfreq(ModelKind::ExampleEn).unwrap();
+
+    // Sort by frequency (descending)
+    let mut sorted_words = wordlist.clone();
+    sorted_words.sort_by(|a, b| {
+        let fa = wf.word_frequency(a);
+        let fb = wf.word_frequency(b);
+        fb.partial_cmp(&fa).unwrap_or(std::cmp::Ordering::Equal)
+    });
+
     let xor_constraint: Vec<u8> = vec![
         0x13, 0x1d, 0x04, 0x52, 0x01, 0x4e, 0x11, 0x05, 0x1c, 0x00, 0x19, 0x1c, 0x53, 0x0a, 0x18,
         0x06, 0x1c, 0x0b,
@@ -39,7 +54,7 @@ fn main() {
 
     for thread_id in 0..6 {
         let output_file = Arc::clone(&output_file);
-        let wordlist = wordlist.clone();
+        let wordlist = sorted_words.clone();
         let xor_constraint = xor_constraint.clone();
         let p1_space_indices = p1_space_permutations[thread_id].clone();
         let p2_space_indices = p2_space_permutations[thread_id].clone();
